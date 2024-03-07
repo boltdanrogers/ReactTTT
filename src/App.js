@@ -23,14 +23,26 @@ function Square({ value, onSquareClick }) {
 export default function Board() {
   //add state to the board to hold the current value of the square components
   const [squares, setSquares] = useState(Array(9).fill(null));
-
+  //and now we add a boolean state to keep track of who's turn it is
+  const [xIsNext, setXIsNext] = useState(true);
   function handleClick(i) {
     //make a copy of the squares array with the slice method
     const nextSquares = squares.slice();
+    //confitional branching *wink*
+    if (xIsNext) {
+      nextSquares[i] = "X";
+    } else {
+      nextSquares[i] = "O";
+    } //end of if else its Xs turn
+
     //sets the first index of the array to X
-    nextSquares[i] = "X";
+    //nextSquares[i] = "X";
+
     //call the setSquares method to let react know that the state has changed and to re-render the component
     setSquares(nextSquares);
+
+    //now switch from X to O and back
+    setXIsNext(!xIsNext);
   } //end of function handleClick
 
   //we can't just have onSquareClick={handleClick(0), this will lead to an infinite loop because it is called right away
