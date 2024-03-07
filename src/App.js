@@ -26,6 +26,10 @@ export default function Board() {
   //and now we add a boolean state to keep track of who's turn it is
   const [xIsNext, setXIsNext] = useState(true);
   function handleClick(i) {
+    //in order to only allow a click to modify an empty square, start with a conditional
+    if (squares[i]) {
+      return;
+    }
     //make a copy of the squares array with the slice method
     const nextSquares = squares.slice();
     //confitional branching *wink*
