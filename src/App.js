@@ -134,16 +134,26 @@ export default function game() {
   const [xIsNext, setXIsNext] = useState(true);
   //state to store the history of the board, as an array containing an array with nine nulls in it
   const [history, setHistory] = useState([Array(9).fill(null)]);
+  //add a state to key track of the current move, defaulting to 0
+  const [currentMove, setCurrentMove] = useState(0);
 
   //there is enough information to to calculate the current boards state
-  const currentSquares = history[history.length - 1]; //this sets the current squares to be passed to the board for rendering as the latest array
-
+  //this sets the current squares to be passed to the board for rendering as the latest array
+  //change this from history.length - 1 to currentMove
+  const currentSquares = history[currentMove];
   //we need a function to be called by the board component
 
   function handlePlay(nextSquares) {
     //this is the new location for the calls to change the state
     //use the spread operator to take everything in history, and add nextSquares
-    setHistory([...history, nextSquares]);
+    //setHistory([...history, nextSquares]);
+    //modify the setHistory call to take into account that the currentMove may not be the last move
+    //we do this by creating a new constant nextHistory to contain a slice of the history array up to the point of the currentMove, and adds the nextSquares
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    //modified setHistory call sending our next history instead of performing the spread of history and adding the nextSquares
+    setHistory(nextHistory);
+    //now set the current move based on the length of currentMove as we may have gone back to a previous move
+    setCurrentMove(nextHistory.length - 1);
     //flip who's turn it is
     setXIsNext(!xIsNext);
   } //end of handlePlay function
@@ -151,15 +161,39 @@ export default function game() {
   //now pass our several states and functions into the board
   //the board will be controlled completely by the props it receives
 
+  function jumpTo(nextMove) {
+    //call the set Current Move function
+    setCurrentMove(nextMove);
+    //call set X Is Next and test if the nextMove is an even number
+    setXIsNext(nextMove % 2 == 0);
+  } //end of function jumpTo
+
+  const moves = history.map((squares, move) => {
+    let description;
+
+    if (move > 0) {
+      description = "Go to move # " + move;
+    } else {
+      description = "Go to game start";
+    } //end of if then else
+
+    //a return of a button containing the description of the game it represents. use the move as key
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  }); //end of const moves and arrow function definition
+
   //our jsx return, with a board section followed by a game-info section
-  //an ordered list
+  //as an ordered list
   return (
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <ol>{/*ToDo*/}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   ); //end of return
