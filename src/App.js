@@ -131,12 +131,14 @@ function calculateWinner(squares) {
 export default function game() {
   //need to have the state stored at this level, lifted up from square to board and now to game
   //state to track whose turn it is
-  const [xIsNext, setXIsNext] = useState(true);
+  //for our final cleanup we see that xIsNext and currentMove are related, so we don't need both to have a stored state, we can derive one from the other
+  //const [xIsNext, setXIsNext] = useState(true);
   //state to store the history of the board, as an array containing an array with nine nulls in it
   const [history, setHistory] = useState([Array(9).fill(null)]);
   //add a state to key track of the current move, defaulting to 0
   const [currentMove, setCurrentMove] = useState(0);
-
+  //here we derive xIsNext from currentMove
+  const xIsNext = currentMove % 2 === 0;
   //there is enough information to to calculate the current boards state
   //this sets the current squares to be passed to the board for rendering as the latest array
   //change this from history.length - 1 to currentMove
@@ -155,7 +157,8 @@ export default function game() {
     //now set the current move based on the length of currentMove as we may have gone back to a previous move
     setCurrentMove(nextHistory.length - 1);
     //flip who's turn it is
-    setXIsNext(!xIsNext);
+    //remove this as we are now deriving xIsNext from currentMove
+    //setXIsNext(!xIsNext);
   } //end of handlePlay function
 
   //now pass our several states and functions into the board
@@ -165,7 +168,8 @@ export default function game() {
     //call the set Current Move function
     setCurrentMove(nextMove);
     //call set X Is Next and test if the nextMove is an even number
-    setXIsNext(nextMove % 2 == 0);
+    //remove this as we are deriving xIsNext from currentMove
+    //setXIsNext(nextMove % 2 == 0);
   } //end of function jumpTo
 
   const moves = history.map((squares, move) => {
